@@ -265,7 +265,7 @@
                 return this.showVideoIframe(src);
             } else if (type === 'html5Video') {
                 this.options.type = 'html5Video';
-                return this.showHtml5Video(this.options.remote);
+                return this.showHtml5Video(src);
             } else {
                 this.options.type = 'url';
                 return this.loadRemoteContent(src);

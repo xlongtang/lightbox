@@ -22,7 +22,7 @@
             options.asyncMethod(item, {
                 onSuccess: function(url) {
                     if (self.gallery_index === index) {
-                        callback(url, type);
+                        callback.call(self, url, type);
                     }
                 },
                 onError: function() {
@@ -33,7 +33,7 @@
             });
         } else {
             // Fall back to the original case.
-            callback(src, type);
+            callback.call(self, src, type);
         }
     }
 
@@ -49,11 +49,11 @@
         // We now change the behavior of the following methods
         this.preloadImage = function(src, type) {
             var self = this;
-            ensureUrlReady.bind(self, src, type, EkkoLightbox.prototype.preloadImage);
+            ensureUrlReady.call(self, src, type, EkkoLightbox.prototype.preloadImage);
         };
         this.detectRemoteType = function(src, type) {
             var self = this;
-            ensureUrlReady.bind(self, src, type, EkkoLightbox.prototype.detectRemoteType);
+            ensureUrlReady.call(self, src, type, EkkoLightbox.prototype.detectRemoteType);
         };
         // Aspcet programming style end
         
@@ -246,31 +246,29 @@
             return this.navigateTo(this.gallery_index);
         },
         detectRemoteType: function(src, type) {
-            function inner() {
-                var video_id;
-                type = type || false;
-                if (type === 'image' || this.isImage(src)) {
-                    this.options.type = 'image';
-                    return this.preloadImage(src, true);
-                } else if (type === 'youtube' || (video_id = this.getYoutubeId(src))) {
-                    this.options.type = 'youtube';
-                    return this.showYoutubeVideo(video_id);
-                } else if (type === 'vimeo' || (video_id = this.getVimeoId(src))) {
-                    this.options.type = 'vimeo';
-                    return this.showVimeoVideo(video_id);
-                } else if (type === 'instagram' || (video_id = this.getInstagramId(src))) {
-                    this.options.type = 'instagram';
-                    return this.showInstagramVideo(video_id);
-                } else if (type === 'video') {
-                    this.options.type = 'video';
-                    return this.showVideoIframe(src);
-                } else if (type === 'html5Video') {
-                    this.options.type = 'html5Video';
-                    return this.showHtml5Video(this.options.remote);
-                } else {
-                    this.options.type = 'url';
-                    return this.loadRemoteContent(src);
-                }
+            var video_id;
+            type = type || false;
+            if (type === 'image' || this.isImage(src)) {
+                this.options.type = 'image';
+                return this.preloadImage(src, true);
+            } else if (type === 'youtube' || (video_id = this.getYoutubeId(src))) {
+                this.options.type = 'youtube';
+                return this.showYoutubeVideo(video_id);
+            } else if (type === 'vimeo' || (video_id = this.getVimeoId(src))) {
+                this.options.type = 'vimeo';
+                return this.showVimeoVideo(video_id);
+            } else if (type === 'instagram' || (video_id = this.getInstagramId(src))) {
+                this.options.type = 'instagram';
+                return this.showInstagramVideo(video_id);
+            } else if (type === 'video') {
+                this.options.type = 'video';
+                return this.showVideoIframe(src);
+            } else if (type === 'html5Video') {
+                this.options.type = 'html5Video';
+                return this.showHtml5Video(this.options.remote);
+            } else {
+                this.options.type = 'url';
+                return this.loadRemoteContent(src);
             }
         },
         updateTitleAndFooter: function() {
@@ -382,39 +380,37 @@
             return this;
         },
         preloadImage: function(src, onLoadShowImage) {
-            function inner() {
-                var img;
-                img = new Image();
-                if ((onLoadShowImage == null) || onLoadShowImage === true) {
-                    img.onload = (function(_this) {
-                        return function() {
-                            var image;
-                            image = $('<img />');
-                            image.attr('src', img.src);
-                            image.addClass('img-responsive');
-                            _this.lightbox_body.html(image);
-                            if (_this.modal_arrows) {
-                                _this.modal_arrows.css('display', 'block');
+            var img;
+            img = new Image();
+            if ((onLoadShowImage == null) || onLoadShowImage === true) {
+                img.onload = (function(_this) {
+                    return function() {
+                        var image;
+                        image = $('<img />');
+                        image.attr('src', img.src);
+                        image.addClass('img-responsive');
+                        _this.lightbox_body.html(image);
+                        if (_this.modal_arrows) {
+                            _this.modal_arrows.css('display', 'block');
+                        }
+                        return image.load(function() {
+                            if (_this.options.scale_height) {
+                                _this.scaleHeight(img.height, img.width);
+                            } else {
+                                _this.resize(img.width);
                             }
-                            return image.load(function() {
-                                if (_this.options.scale_height) {
-                                    _this.scaleHeight(img.height, img.width);
-                                } else {
-                                    _this.resize(img.width);
-                                }
-                                return _this.options.onContentLoaded.call(_this);
-                            });
-                        };
-                    })(this);
-                    img.onerror = (function(_this) {
-                        return function() {
-                            return _this.error('Failed to load image: ' + src);
-                        };
-                    })(this);
-                }
-                img.src = src;
-                return img;
+                            return _this.options.onContentLoaded.call(_this);
+                        });
+                    };
+                })(this);
+                img.onerror = (function(_this) {
+                    return function() {
+                        return _this.error('Failed to load image: ' + src);
+                    };
+                })(this);
             }
+            img.src = src;
+            return img;
         },
         scaleHeight: function(height, width) {
             var border_padding, factor, footer_height, header_height, margins, max_height;

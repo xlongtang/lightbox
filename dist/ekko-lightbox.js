@@ -49,7 +49,8 @@
         // We now change the behavior of the following methods
         this.preloadImage = function(src, type) {
             var self = this;
-            ensureUrlReady.call(self, src, type, EkkoLightbox.prototype.preloadImage);
+            ensureUrlReady.call(self, src, type,
+                                options.preloadImage || EkkoLightbox.prototype.preloadImage);
         };
         this.detectRemoteType = function(src, type) {
             var self = this;
@@ -342,8 +343,9 @@
 		    return this;          
         },
         loadRemoteContent: function(url) {
-            var disableExternalCheck, width;
+            var disableExternalCheck, width, height;
             width = this.$element.data('width') || 560;
+            height = this.$element.data('height') || 560;            
             this.resize(width);
             disableExternalCheck = this.$element.data('disableExternalCheck') || false;
             if (!disableExternalCheck && !this.isExternal(url)) {
@@ -353,7 +355,7 @@
                     };
                 })(this)));
             } else {
-                this.lightbox_body.html('<iframe width="' + width + '" height="' + width + '" src="' + url + '" frameborder="0" allowfullscreen></iframe>');
+                this.lightbox_body.html('<iframe width="' + width + '" height="' + height + '" src="' + url + '" frameborder="0" allowfullscreen></iframe>');
                 this.options.onContentLoaded.call(this);
             }
             if (this.modal_arrows) {

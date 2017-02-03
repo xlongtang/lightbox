@@ -337,7 +337,7 @@
 	        height = width / (560 / 315);
             this.resize(width);          
             this.lightbox_body.html('<div class="embed-responsive embed-responsive-16by9"><video width="' + width + '" height="' + height + '" src="' + url + '" preload="auto" autoplay controls class="embed-responsive-item"></video></div>');
-		    this._config.onContentLoaded.call(this);
+		    this.options.onContentLoaded.call(this);
 		    if (this._$modalArrows) this._$modalArrows.css('display', 'none'); //hide the arrows when showing video
 		    this._toggleLoading(false);
 		    return this;          

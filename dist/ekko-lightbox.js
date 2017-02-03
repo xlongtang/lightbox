@@ -338,8 +338,9 @@
             this.resize(width);          
             this.lightbox_body.html('<div class="embed-responsive embed-responsive-16by9"><video width="' + width + '" height="' + height + '" src="' + url + '" preload="auto" autoplay controls class="embed-responsive-item"></video></div>');
 		    this.options.onContentLoaded.call(this);
-		    if (this._$modalArrows) this._$modalArrows.css('display', 'none'); //hide the arrows when showing video
-		    this._toggleLoading(false);
+            if (this.modal_arrows) {
+                this.modal_arrows.css('display', 'none');
+            }
 		    return this;          
         },
         loadRemoteContent: function(url) {
